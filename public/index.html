@@ -2010,6 +2010,14 @@
         from { opacity: 1;   transform: translateY(0px); }
         to   { opacity: 0.08; transform: translateY(-16px); }
       }
+
+      /* Disable fade-out on mobile — photo is below text in column layout
+         so it dims while still in view, which looks broken on phones */
+      @media (max-width: 768px) {
+        .hero-main {
+          animation: none;
+        }
+      }
     }
 
     /* Section pill dots — right side navigator */
