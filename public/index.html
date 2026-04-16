@@ -345,7 +345,7 @@
       left: 50%;
       width: 320px;
       height: 320px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 65%);
       transform: translate(-50%, -50%);
       z-index: 0;
       pointer-events: none;
@@ -371,7 +371,9 @@
       object-position: bottom;
       position: relative;
       z-index: 1;
-      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+      filter:
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.18))
+        drop-shadow(0 0 30px rgba(255, 255, 255, 0.08));
       transition: transform 0.5s ease;
     }
 
@@ -1623,10 +1625,582 @@
       position: relative;
       z-index: 1;
     }
+
+    /* ═══════════════════════════════════════
+       PREMIUM LAYER — GPU-only animations
+       ═══════════════════════════════════════ */
+
+    /* Custom Cursor — only on devices with fine pointer (not mobile) */
+    @media (pointer: fine) {
+      body { cursor: none; }
+      a, button, .project-card, .skill-pill, .cert-item { cursor: none; }
+
+      #cursor-dot,
+      #cursor-outline {
+        position: fixed;
+        top: 0;
+        left: 0;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 99999;
+        will-change: transform;
+        transform: translate(-200px, -200px);
+      }
+      #cursor-dot {
+        width: 5px;
+        height: 5px;
+        background: #fff;
+        mix-blend-mode: difference;
+      }
+      #cursor-outline {
+        width: 34px;
+        height: 34px;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        mix-blend-mode: difference;
+        /* CSS transition handles the ring follow — no JS loop needed */
+        transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1),
+                    width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.3s ease;
+      }
+      body.cursor-hover #cursor-outline {
+        width: 56px;
+        height: 56px;
+        border-color: rgba(255, 255, 255, 0.75);
+      }
+    }
+
+    /* Scroll progress — gradient */
+    #scroll-progress {
+      background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.65)) !important;
+    }
+
+    /* Section heading shimmer sweep — GPU background-position */
+    .section-heading {
+      position: relative;
+      overflow: hidden;
+    }
+    .section-heading::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.13) 50%, transparent 65%);
+      background-size: 200% 100%;
+      background-position: -100% 0;
+      animation: shimmer-sweep 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .section-heading.light::after {
+      background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.18) 50%, transparent 65%);
+      background-size: 200% 100%;
+      background-position: -100% 0;
+    }
+    @keyframes shimmer-sweep {
+      0%   { background-position: -100% 0; }
+      60%  { background-position: 200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* Section label — tiny inline prefix line */
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 18px;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.45;
+      flex-shrink: 0;
+    }
+
+    /* Service card — animated left-accent reveal */
+    .service-card {
+      position: relative;
+      overflow: hidden;
+      transition: padding-left 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2px;
+      height: 0%;
+      background: #1a1a18;
+      transition: height 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .service-card:hover::before { height: 100%; }
+    .service-card:hover { padding-left: 1.25rem; }
+
+    /* Achievement item — bottom sweep accent */
+    .achievement-item {
+      position: relative;
+      overflow: hidden;
+    }
+    .achievement-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: #1a1a18;
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .achievement-item:hover::after { width: 100%; }
+    .achievement-icon {
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .achievement-item:hover .achievement-icon {
+      transform: rotate(-6deg) scale(1.08);
+    }
+
+    /* Timeline entry — hover subtle indent */
+    .timeline-date {
+      transition: color 0.35s ease;
+    }
+    .timeline-entry:hover .timeline-date {
+      color: #555;
+    }
+    .timeline-content {
+      transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .timeline-entry:hover .timeline-content {
+      padding-left: 2.75rem;
+    }
+
+    /* Nav logo — letter-spacing expand */
+    .nav-logo {
+      position: relative;
+      transition: letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-logo:hover { letter-spacing: 0.18em; }
+    .nav-logo::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.45);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-logo:hover::after { transform: scaleX(1); }
+
+    /* Nav links — underline slide reveal */
+    .nav-links a:not(.contact-btn) {
+      position: relative;
+    }
+    .nav-links a:not(.contact-btn)::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.6);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-links a:not(.contact-btn):hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* Footer — gradient top border */
+    footer {
+      border-top: none !important;
+      position: relative;
+    }
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,0.15) 20%,
+        rgba(255,255,255,0.3) 50%,
+        rgba(255,255,255,0.15) 80%,
+        transparent 100%);
+    }
+
+    /* Project number — editorial style with leading line */
+    .project-number {
+      font-size: 0.625rem;
+      letter-spacing: 0.3em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .project-number::before {
+      content: '';
+      display: inline-block;
+      width: 18px;
+      height: 1px;
+      background: rgba(255,255,255,0.35);
+      flex-shrink: 0;
+    }
+
+    /* Btn primary — shine sweep */
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -80%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0,0,0,0.07), transparent);
+      transform: skewX(-15deg);
+      transition: left 0.55s ease;
+    }
+    .btn-primary:hover::after { left: 150%; }
+
+    /* Btn secondary — fill reveal */
+    .btn-secondary {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-secondary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.04);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-secondary:hover::before { transform: scaleX(1); }
+
+    /* Form submit btn — premium shine */
+    .form-submit {
+      position: relative;
+      overflow: hidden;
+    }
+    .form-submit::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -80%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+      transform: skewX(-15deg);
+      transition: left 0.5s ease;
+    }
+    .form-submit:hover::after { left: 150%; }
+
+    /* Hero scroll indicator — pulsing line */
+    .hero-scroll::before {
+      animation: scroll-pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes scroll-pulse {
+      0%, 100% { opacity: 0.25; transform: scaleX(0.6); }
+      50%       { opacity: 1;   transform: scaleX(1); }
+    }
+
+    /* Social link — refined hover ring */
+    .social-link {
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .social-link:hover {
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.07);
+    }
+
+    /* Hero stat number — micro-scale on observe */
+    .hero-stat-number {
+      display: inline-block;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .hero-stat:hover .hero-stat-number {
+      transform: scale(1.06);
+    }
+
+    /* Cert item — left accent bar reveal */
+    .cert-list {
+      position: relative;
+    }
+    .cert-item {
+      position: relative;
+    }
+    .cert-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2px;
+      height: 0;
+      background: rgba(255,255,255,0.5);
+      transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cert-item:hover::before { height: 100%; }
+
+    /* Project card — faint inner glow on hover */
+    .project-card:hover {
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5),
+                  0 0 0 1px rgba(255,255,255,0.06),
+                  inset 0 1px 0 rgba(255,255,255,0.05) !important;
+    }
+
+    /* About bio — subtle first-line emphasis */
+    .about-bio::first-line {
+      letter-spacing: 0.02em;
+    }
+
+    /* Marquee — slightly refined separator dot */
+    .marquee-content {
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    .marquee:hover .marquee-content {
+      opacity: 0.65;
+    }
+
+    /* ═══════════════════════════════════════
+       SCROLL EXPERIENCE
+       ═══════════════════════════════════════ */
+
+    /* Smoother fade-up — premium cubic-bezier (overrides earlier rule) */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* CSS Scroll-Driven Animations — pure compositor, zero JS
+       Supported: Chrome 115+, Edge 115+, Safari 18+
+       Falls back gracefully (no animation) on older browsers. */
+    @supports (animation-timeline: scroll()) {
+      /* Hero background letter drifts up slower than scroll speed — parallax */
+      .hero-bg-letter {
+        animation: bg-drift linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0vh 90vh;
+      }
+      @keyframes bg-drift {
+        from { transform: translate(-50%, -50%); }
+        to   { transform: translate(-50%, -40%); }
+      }
+
+      /* Hero content: gently fades & lifts as you scroll into About */
+      .hero-main {
+        animation: hero-exit linear both;
+        animation-timeline: scroll(root);
+        animation-range: 35vh 80vh;
+      }
+      @keyframes hero-exit {
+        from { opacity: 1;   transform: translateY(0px); }
+        to   { opacity: 0.08; transform: translateY(-16px); }
+      }
+    }
+
+    /* Section pill dots — right side navigator */
+    #section-dots {
+      position: fixed;
+      right: 1.1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      z-index: 500;
+    }
+    /* Pill shape: 3×20px always in DOM, scaleY collapses to 5px dot */
+    .sdot {
+      width: 3px;
+      height: 20px;
+      border-radius: 2px;
+      background: rgba(150, 150, 150, 0.25);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transform: scaleY(0.25);
+      transform-origin: center;
+      transition: background 0.4s ease,
+                  transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      outline: none;
+    }
+    .sdot.active {
+      background: rgba(255, 255, 255, 0.8);
+      transform: scaleY(1);
+    }
+    /* On dark-background sections dots are white; on light they darken */
+    body.in-light-section .sdot {
+      background: rgba(80, 80, 80, 0.25);
+    }
+    body.in-light-section .sdot.active {
+      background: rgba(30, 30, 24, 0.75);
+    }
+    @media (max-width: 900px) {
+      #section-dots { display: none; }
+    }
+
+    /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+       HERO PREMIUM UPGRADES
+       \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+
+    /* 1. Subtle dot grid \u2014 architectural / editorial premium feel */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px);
+      background-size: 42px 42px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* 2. No glow — we want seamless blend into background, not a halo */
+    .photo-frame::before {
+      background: transparent !important;
+    }
+
+    /* 3. Remove corner brackets - they frame the photo as a separate box */
+    .hero-right::before { display: none; }
+    .hero-right::after  { display: none; }
+
+    /* SEAMLESS PHOTO BLEND - 4-directional gradient overlay.
+       Overrides existing bottom-only fade with fades on all 4 edges.
+       Left is strongest: photo melts into the text/content area. */
+    .photo-frame::after {
+      background:
+        linear-gradient(to right,  #0f0f0e 0%, rgba(15,15,14,0) 50%),
+        linear-gradient(to left,   rgba(15,15,14,0.65) 0%, rgba(15,15,14,0) 28%),
+        linear-gradient(to bottom, #0f0f0e 0%, rgba(15,15,14,0) 22%),
+        linear-gradient(180deg,    transparent 40%, rgba(15,15,14,0.55) 68%, #0f0f0e 92%) !important;
+    }
+
+    /* Remove drop-shadow - it traces a hard outline around the silhouette */
+    .photo-frame img { filter: none !important; }\u2014 top-right + bottom-left */
+    .hero-right::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      border-top: 1.5px solid rgba(255,255,255,0.3);
+      border-right: 1.5px solid rgba(255,255,255,0.3);
+      z-index: 10;
+      pointer-events: none;
+    }
+    .hero-right::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: -10px;
+      width: 30px;
+      height: 30px;
+      border-bottom: 1.5px solid rgba(255,255,255,0.3);
+      border-left: 1.5px solid rgba(255,255,255,0.3);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* 4. Availability pulsing dot before "Hi, I am" */
+    .hero-intro {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .hero-intro::before {
+      content: '';
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+      flex-shrink: 0;
+      animation: avail-pulse 2.8s ease-in-out infinite;
+    }
+    @keyframes avail-pulse {
+      0%, 100% { opacity: 1;   box-shadow: 0 0 0 0   rgba(255,255,255,0.25); }
+      50%       { opacity: 0.35; box-shadow: 0 0 0 5px rgba(255,255,255,0); }
+    }
+
+    /* 5. Name accent line \u2014 draws in after char animation completes */
+    .hero-name {
+      position: relative;
+    }
+    .hero-name::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 56px;
+      height: 1.5px;
+      background: rgba(255,255,255,0.3);
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: name-line-draw 0.8s cubic-bezier(0.16, 1, 0.3, 1) 2s both;
+    }
+    @keyframes name-line-draw {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+
+    /* 6. Stat numbers \u2014 bigger and more impactful */
+    .hero-stat-number {
+      font-size: 3rem !important;
+      letter-spacing: -0.02em;
+    }
+
+    /* 7. Stats row \u2014 vertical dividers between each stat */
+    .hero-stat {
+      position: relative;
+    }
+    .hero-stat + .hero-stat::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem;
+      top: 10%;
+      height: 80%;
+      width: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* 8. Hero main content \u2014 ensure z-index above dot grid */
+    .hero-main {
+      position: relative;
+      z-index: 2;
+    }
+    .hero-scroll {
+      position: relative;
+      z-index: 2;
+    }
+    .hero-nav {
+      z-index: 10;
+    }
+    .hero-bg-letter {
+      z-index: 1;
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- Custom Cursor -->
+  <div id="cursor-dot" aria-hidden="true"></div>
+  <div id="cursor-outline" aria-hidden="true"></div>
 
   <!-- Scroll Progress Bar -->
   <div id="scroll-progress"></div>
@@ -2647,6 +3221,133 @@
         });
       });
     }
+
+    // ═══════════════════════════════════════
+    // CUSTOM CURSOR — zero RAF, CSS transition
+    // ═══════════════════════════════════════
+    (function () {
+      if (!window.matchMedia('(pointer: fine)').matches) return;
+      const dot = document.getElementById('cursor-dot');
+      const ring = document.getElementById('cursor-outline');
+      if (!dot || !ring) return;
+
+      // Both updated directly on mousemove — no animation loop at all.
+      // The ring's CSS transition handles the smooth follow natively.
+      window.addEventListener('mousemove', function (e) {
+        var t = 'translate(' + e.clientX + 'px, ' + e.clientY + 'px) translate(-50%, -50%)';
+        dot.style.transform = t;
+        ring.style.transform = t;
+      }, { passive: true });
+
+      // Expand ring on interactive elements
+      document.querySelectorAll('a, button, .project-card, .skill-pill, .cert-item, .achievement-item').forEach(function (el) {
+        el.addEventListener('mouseenter', function () { document.body.classList.add('cursor-hover'); }, { passive: true });
+        el.addEventListener('mouseleave', function () { document.body.classList.remove('cursor-hover'); }, { passive: true });
+      });
+
+      // Hide when leaving window
+      document.addEventListener('mouseleave', function () {
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+      }, { passive: true });
+
+      document.addEventListener('mouseenter', function () {
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+      }, { passive: true });
+    })();
+
+    // ═══════════════════════════════════════
+    // SECTION DOT NAVIGATOR — IntersectionObserver only
+    // ═══════════════════════════════════════
+    (function () {
+      var ids = ['home','about','skills','experience','portfolio','achievements','certifications','contact'];
+      var lightSections = ['about','experience','achievements','contact'];
+
+      var nav = document.createElement('nav');
+      nav.id = 'section-dots';
+      nav.setAttribute('aria-label', 'Page sections');
+      document.body.appendChild(nav);
+
+      var pairs = [];
+      ids.forEach(function (id) {
+        var sec = document.getElementById(id);
+        if (!sec) return;
+        var btn = document.createElement('button');
+        btn.className = 'sdot';
+        btn.setAttribute('aria-label', 'Go to ' + id);
+        btn.addEventListener('click', function () {
+          sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        nav.appendChild(btn);
+        pairs.push({ el: sec, btn: btn, light: lightSections.indexOf(id) > -1 });
+      });
+
+      // Single observer handles both dot active state AND dot color scheme
+      var dotObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          var p = pairs.find(function (x) { return x.el === e.target; });
+          if (!p) return;
+          p.btn.classList.toggle('active', e.isIntersecting);
+          if (e.isIntersecting) {
+            // Swap dot color when entering light vs dark section
+            if (p.light) document.body.classList.add('in-light-section');
+            else          document.body.classList.remove('in-light-section');
+          }
+        });
+      }, { threshold: 0.45 });
+
+      pairs.forEach(function (p) { dotObs.observe(p.el); });
+    })();
+
+    // ═══════════════════════════════════════
+    // STAGGER DELAYS — cascade children into view
+    // ═══════════════════════════════════════
+    // Cards/items that have individual .fade-up classes: add a CSS
+    // transitionDelay so they cascade in left-to-right / top-down.
+    // The existing IntersectionObserver fires .visible — this just staggers it.
+    (function () {
+      document.querySelectorAll('.project-grid .project-card').forEach(function (el, i) {
+        el.style.transitionDelay = (i * 85) + 'ms';
+      });
+      document.querySelectorAll('.cert-list .cert-item').forEach(function (el, i) {
+        el.style.transitionDelay = (i * 65) + 'ms';
+      });
+      document.querySelectorAll('.service-cards .service-card').forEach(function (el, i) {
+        el.style.transitionDelay = (i * 80) + 'ms';
+      });
+    })();
+
+    // ═══════════════════════════════════════
+    // ACHIEVEMENT ITEMS — stagger reveal
+    // ═══════════════════════════════════════
+    // Achievement items sit inside a .fade-up grid (no individual fade-up).
+    // Pre-hide each item, then reveal with stagger when the grid enters view.
+    (function () {
+      var items = document.querySelectorAll('.achievement-item');
+      items.forEach(function (el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(22px)';
+        el.style.transition = 'opacity 0.75s cubic-bezier(0.16,1,0.3,1), transform 0.75s cubic-bezier(0.16,1,0.3,1)';
+      });
+
+      var grid = document.querySelector('.achievements-grid');
+      if (!grid) return;
+
+      var achObs = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) {
+          items.forEach(function (el, i) {
+            setTimeout(function () {
+              el.style.opacity = '1';
+              el.style.transform = 'translateY(0)';
+            }, i * 110);
+          });
+          achObs.disconnect();
+        }
+      }, { threshold: 0.15 });
+
+      achObs.observe(grid);
+    })();
   </script>
 
 </body>
