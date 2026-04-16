@@ -1630,45 +1630,6 @@
        PREMIUM LAYER — GPU-only animations
        ═══════════════════════════════════════ */
 
-    /* Custom Cursor — only on devices with fine pointer (not mobile) */
-    @media (pointer: fine) {
-      body { cursor: none; }
-      a, button, .project-card, .skill-pill, .cert-item { cursor: none; }
-
-      #cursor-dot,
-      #cursor-outline {
-        position: fixed;
-        top: 0;
-        left: 0;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 99999;
-        will-change: transform;
-        transform: translate(-200px, -200px);
-      }
-      #cursor-dot {
-        width: 5px;
-        height: 5px;
-        background: #fff;
-        mix-blend-mode: difference;
-      }
-      #cursor-outline {
-        width: 34px;
-        height: 34px;
-        border: 1px solid rgba(255, 255, 255, 0.45);
-        mix-blend-mode: difference;
-        /* CSS transition handles the ring follow — no JS loop needed */
-        transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1),
-                    width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                    height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                    border-color 0.3s ease;
-      }
-      body.cursor-hover #cursor-outline {
-        width: 56px;
-        height: 56px;
-        border-color: rgba(255, 255, 255, 0.75);
-      }
-    }
 
     /* Scroll progress — gradient */
     #scroll-progress {
@@ -2206,9 +2167,6 @@
 
 <body>
 
-  <!-- Custom Cursor -->
-  <div id="cursor-dot" aria-hidden="true"></div>
-  <div id="cursor-outline" aria-hidden="true"></div>
 
   <!-- Scroll Progress Bar -->
   <div id="scroll-progress"></div>
@@ -3230,40 +3188,6 @@
       });
     }
 
-    // ═══════════════════════════════════════
-    // CUSTOM CURSOR — zero RAF, CSS transition
-    // ═══════════════════════════════════════
-    (function () {
-      if (!window.matchMedia('(pointer: fine)').matches) return;
-      const dot = document.getElementById('cursor-dot');
-      const ring = document.getElementById('cursor-outline');
-      if (!dot || !ring) return;
-
-      // Both updated directly on mousemove — no animation loop at all.
-      // The ring's CSS transition handles the smooth follow natively.
-      window.addEventListener('mousemove', function (e) {
-        var t = 'translate(' + e.clientX + 'px, ' + e.clientY + 'px) translate(-50%, -50%)';
-        dot.style.transform = t;
-        ring.style.transform = t;
-      }, { passive: true });
-
-      // Expand ring on interactive elements
-      document.querySelectorAll('a, button, .project-card, .skill-pill, .cert-item, .achievement-item').forEach(function (el) {
-        el.addEventListener('mouseenter', function () { document.body.classList.add('cursor-hover'); }, { passive: true });
-        el.addEventListener('mouseleave', function () { document.body.classList.remove('cursor-hover'); }, { passive: true });
-      });
-
-      // Hide when leaving window
-      document.addEventListener('mouseleave', function () {
-        dot.style.opacity = '0';
-        ring.style.opacity = '0';
-      }, { passive: true });
-
-      document.addEventListener('mouseenter', function () {
-        dot.style.opacity = '1';
-        ring.style.opacity = '1';
-      }, { passive: true });
-    })();
 
     // ═══════════════════════════════════════
     // SECTION DOT NAVIGATOR — IntersectionObserver only
